@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'package:adopt_app/models/pet.dart';
 import "package:dio/dio.dart";
+import 'package:adopt_app/services/client.dart';
 
 class DioClient {
-  final Dio _dio = Dio();
-
-  final _baseUrl = 'http://10.0.2.2:5000';
-
   Future<List<Pet>> getPets() async {
     List<Pet> pets = [];
     try {
-      Response response = await _dio.get(_baseUrl + '/pets');
+      Response response = await client.dio.post('/pets');
       pets = (response.data as List).map((pet) => Pet.fromJson(pet)).toList();
     } on DioError catch (error) {
       print(error);
@@ -29,7 +26,7 @@ class DioClient {
           pet.image,
         ),
       });
-      Response response = await _dio.post(_baseUrl + '/pets', data: data);
+      Response response = await client.dio.post('/pets', data: data);
       retrievedPet = Pet.fromJson(response.data);
     } on DioError catch (error) {
       print(error);
@@ -50,8 +47,7 @@ class DioClient {
         ),
       });
 
-      Response response =
-          await _dio.put(_baseUrl + '/pets/${pet.id}', data: data);
+      Response response = await client.dio.post('/pets/${pet.id}', data: data);
       retrievedPet = Pet.fromJson(response.data);
     } on DioError catch (error) {
       print(error);
@@ -61,7 +57,7 @@ class DioClient {
 
   Future<void> deletePet({required int petId}) async {
     try {
-      await _dio.delete(_baseUrl + '/pets/${petId}');
+      await client.dio.post('/pets/${petId}');
     } on DioError catch (error) {
       print(error);
     }
@@ -70,7 +66,7 @@ class DioClient {
   Future<Pet> adoptPet({required int petId}) async {
     late Pet retrievedPet;
     try {
-      Response response = await _dio.post(_baseUrl + '/pets/adopt/${petId}');
+      Response response = await client.dio.post('/pets/adopt/${petId}');
       retrievedPet = Pet.fromJson(response.data);
     } on DioError catch (error) {
       print(error);
